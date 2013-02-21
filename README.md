@@ -19,5 +19,5 @@ First, implement the producer-consumer with multiple threads without any
 synchronization primitive. That is, no mutexes and condition variables. You are still using POSIX threads for the producers and consumer. Run it for different N values and observe the reported value by the consumer. Document your experimental observations in the README file you submit with the assignment.
 Next, you modify the program to include the necessary synchronization primitive so that the race conditions can be prevented. Now, report the experimental observations. You need to do many experiments because there cannot be race condition.
 
-Measure the running time of the program using the gettimeofday function.
+Measure the running time of the program using the **gettimeofday** function.
 What is the overhead of synchronization?
