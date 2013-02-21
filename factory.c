@@ -8,7 +8,6 @@
 
 queue q;
 
-
 int nb_prod = 50;
 int sync_on = 1;
 
@@ -23,6 +22,7 @@ int main(int argc, char *argv[]) {
 	// Initiates random seed
 	srand(time(NULL));
 
+	// Deals with extra arguments
 	if(argc > 1) {
 
 		if(!strcmp(argv[1], "-async")) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		// Joins the producer threads
-		if(id != 0 && pthread_join(prod_thread[id -1], NULL))
+		if(id != 0 && pthread_join(prod_thread[id], NULL))
 		{
 			printf("Error joining producer thread #%d\n", id);
 			return 1;
@@ -77,18 +77,19 @@ int main(int argc, char *argv[]) {
 
 	printf("Produced: %d\nConsumed: %d\n", q.end, q.start);
 
+	exit(0);
 	return 0;
 }
 
 
 static void * producer() {
+	
 	int i;
 	for(i = 0; i < nb_prod; i++) {
 		
 		int item = rand() % 6969;
 		
 		if(sync_on) {
-
 			pthread_mutex_lock(&mutex);
 		}
 
@@ -97,7 +98,6 @@ static void * producer() {
 		q.end++;
 
 		if(sync_on) {
-
 			pthread_cond_signal(&cond);
 			pthread_mutex_unlock(&mutex);
 		}
@@ -107,9 +107,7 @@ static void * producer() {
 
 static void * consumer() {
 
-	int i = 0;
-
-	for(i = 0; i < nb_prod/NB_CONS_THREAD; i++) {
+	while(1) {
 		if(sync_on){
 
 			pthread_mutex_lock(&mutex);
@@ -119,16 +117,14 @@ static void * consumer() {
 			}
 
 		} else {
-
 			while(q.end == q.start);
 		}
 
-		int item = q.data[q.start];
+		//int item = q.data[q.start];
 		//printf("@%i: %i consumed\n", q.start, item);
 		q.start++;
 		
 		if(sync_on) {
-
 			pthread_mutex_unlock(&mutex);
 		}
 	}
