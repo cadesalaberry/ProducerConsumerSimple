@@ -1,6 +1,6 @@
 #define NB_PROD_THREAD 10
-#define NB_CONS_THREAD 10
-#define MAX_QUEUE 99999999
+#define NB_CONS_THREAD 1
+#define MAX_QUEUE 9999999
 
 typedef struct {
 	
