@@ -12,7 +12,7 @@
 #define PRINT_CONS if (!(q.start % 10000)) {printf("@%llu: %i consumed\n", q.start, q.data[q.start]);}
 
 
-// Defaults units to produce to 50
+// Default number of units to produce to 50
 unsigned long long nb_prod = 50;
 
 int to_consume;
