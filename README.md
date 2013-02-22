@@ -1,3 +1,5 @@
+NOTE: **Conclusion at the end of the file.**
+
 
 # Producer-Consumer Algorithm
 -----------------------------------------
@@ -21,3 +23,36 @@ Next, you modify the program to include the necessary synchronization primitive 
 
 Measure the running time of the program using the **gettimeofday** function.
 What is the overhead of synchronization?
+
+
+# How to Use
+
+You can run the program by using the ./**run.sh** bash script.
+
+If you want to run the program on its own, the available commands are:
+
+>**-async**	Disables sync mode (no use of mutex and conditions variables).
+
+>**-profile**	Will only output the running time.
+
+>**-produce N**	Specifies that each producers should produce *N* units. (default=50)
+
+If you want more options, you can play around with the values in the header file **factory.h**. Especially the number of producer and consumer threads that should be produced:
+
+	#define NB_PROD_THREAD 10
+	#define NB_CONS_THREAD 1
+
+# Conclusion
+
+With no synchronisation, the threads are running into race conditions. They are writing the same spot multiple times in the queue with different values.
+
+	Uncomment "PRINT_CONS" and "PRINT_PROD" to see the result.
+
+With synchronisation, no such behavious can be observed, and all the units produced are being consumed as well.
+
+	Again, you can uncomment "PRINT_CONS" and "PRINT_PROD" to see the result.
+
+To observe the overhead of synchronisation, you can run the profiler executing the ./**profile.sh** bash file. One of my run can be seen in the **report.csv** file.
+
+The csv file format was used to be able to import it quickly on a spreadsheet. The resulting graph can be seen in the folder as **overhead_graph.png**.
+
