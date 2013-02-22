@@ -1,15 +1,12 @@
-
-if [ -e ./*.o ]
-	then make clean > /dev/null
-fi
 make > /dev/null
 if [ -e ./factory ]
 	then
-	echo "Synchronous:"
-	./factory 999999
+	echo "Asynchronous:"
+	./factory -async -produce 6969
+	#./factory 6969
 	echo ""
-	echo "asynchronous:"
-	./factory -async 999999
+	echo "Synchronous:"
+	./factory -produce 6969
 fi
 if [ -e ./*.o ]
 	then make clean > /dev/null
