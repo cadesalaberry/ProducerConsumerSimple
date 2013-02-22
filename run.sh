@@ -5,10 +5,11 @@ fi
 make > /dev/null
 if [ -e ./factory ]
 	then
-	echo "synchronous"
-	./factory 999
-	echo "asynchronous"
-	./factory -async 999
+	echo "Synchronous:"
+	./factory 999999
+	echo ""
+	echo "asynchronous:"
+	./factory -async 999999
 fi
 if [ -e ./*.o ]
 	then make clean > /dev/null
