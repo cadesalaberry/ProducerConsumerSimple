@@ -113,7 +113,7 @@ static void * producer() {
 
 		q.data[q.end] = item;
 		
-		PRINT_PROD
+		//PRINT_PROD
 
 		q.end++;
 
@@ -141,8 +141,8 @@ static void * consumer(int * unit) {
 			while(q.end == q.start);
 		}
 
-		//int item = q.data[q.start];
-		//printf("@%i: %i consumed\n", q.start, item);
+		PRINT_CONS
+
 		q.start++;
 		
 		if(sync_on) {
