@@ -8,7 +8,8 @@
 
 queue q;
 
-int nb_prod = 50;
+int to_consume;
+int to_produce;
 int sync_on = 1;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -19,8 +20,15 @@ static void * consumer();
 
 int main(int argc, char *argv[]) {
 	
+	//Setting up timer
+	struct timeval start, end;
+	gettimeofday(&start, NULL);
+
 	// Initiates random seed
 	srand(time(NULL));
+
+	// Defaults units to produce to 50
+	int nb_prod = 50;
 
 	// Deals with extra arguments
 	if(argc > 1) {
@@ -40,7 +48,10 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	init_queue(&q);
+	// Determines what to consume and what to produce
+	to_consume = NB_PROD_THREAD / NB_CONS_THREAD * nb_prod;
+	to_produce = nb_prod;
+	init_queue(&q, NB_PROD_THREAD * nb_prod);
 	
 	pthread_t prod_thread[NB_PROD_THREAD];
 	pthread_t cons_thread[NB_CONS_THREAD];
@@ -50,14 +61,14 @@ int main(int argc, char *argv[]) {
 	for(id = 0; id < NB_PROD_THREAD; id++) {
 		
 		// Creates the producer threads
-		if(pthread_create(&prod_thread[id], NULL, producer, "")) {
+		if(pthread_create(&prod_thread[id], NULL, producer, NULL)) {
 			
 			printf("Error creating producer thread #%d\n", id);
 			return 1;
 		}
 
 		// Joins the producer threads
-		if(id != 0 && pthread_join(prod_thread[id], NULL))
+		if(pthread_join(prod_thread[id], NULL))
 		{
 			printf("Error joining producer thread #%d\n", id);
 			return 1;
@@ -68,24 +79,31 @@ int main(int argc, char *argv[]) {
 	for(id = 0; id < NB_PROD_THREAD; id++) {
 		
 		// Creates the consumer threads
-		if(pthread_create(&cons_thread[id], NULL, consumer, "")) {
+		if(pthread_create(&cons_thread[id], NULL, consumer, NULL)) {
 			
 			printf("Error creating customer thread\n");
 			return 1;
 		}
 	}
 
-	printf("Produced: %d\nConsumed: %d\n", q.end, q.start);
-
+	printf("Produced\t: %d\n", q.end);
+	printf("Consumed\t: %d\n", q.start);
+	
+	// Ends Timer
+	gettimeofday(&end, NULL);
+	printf("Time\t\t: %ld.", end.tv_sec - start.tv_sec);
+	printf("%ld\n", end.tv_usec - start.tv_usec);
 	exit(0);
 	return 0;
 }
 
 
 static void * producer() {
-	
+
+	//printf("Producing:%d\n", to_produce);
+
 	int i;
-	for(i = 0; i < nb_prod; i++) {
+	for(i = 0; i < to_produce; i++) {
 		
 		int item = rand() % 6969;
 		
@@ -94,7 +112,9 @@ static void * producer() {
 		}
 
 		q.data[q.end] = item;
-		//printf("@%i: %i produced\n", q.end - nb_prod + i, item);
+		
+		PRINT_PROD
+
 		q.end++;
 
 		if(sync_on) {
@@ -105,9 +125,10 @@ static void * producer() {
 	return NULL;
 }
 
-static void * consumer() {
+static void * consumer(int * unit) {
 
-	while(1) {
+
+	while(q.start < to_consume) {
 		if(sync_on){
 
 			pthread_mutex_lock(&mutex);
@@ -128,5 +149,6 @@ static void * consumer() {
 			pthread_mutex_unlock(&mutex);
 		}
 	}
+	
 	return NULL;
 }
